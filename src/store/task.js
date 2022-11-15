@@ -1,4 +1,4 @@
-import {createAction, createSlice} from "@reduxjs/toolkit";
+import {createSlice} from "@reduxjs/toolkit";
 import todosService from "../services/todos.service";
 import {setError} from "./errors";
 
@@ -16,6 +16,10 @@ const taskSlice = createSlice({
             const elementIndex = state.entities.findIndex(el => el.id === action.payload.id)
             state.entities[elementIndex] = {...state.entities[elementIndex], ...action.payload}
         },
+        create(state, action){
+            console.log('action',action)
+          state.entities.push({...action.payload, id:Date.now()+action.payload.id})
+        },
         remove(state, action) {
             state.entities = state.entities.filter(el => el.id !== action.payload.id)
         },
@@ -29,7 +33,7 @@ const taskSlice = createSlice({
 })
 
 const {actions, reducer: reducer} = taskSlice
-const {update, remove, recived, taskRequested, taskRequestFailed} = actions
+const {update, remove, recived,create, taskRequested, taskRequestFailed} = actions
 
 export const loadTasks = () => async (dispatch) => {
     dispatch(taskRequested())
@@ -52,6 +56,15 @@ export function titleChanged(id) {
 
 export function taskDeleted(id) {
     return remove({id})
+}
+
+export const taskCreated = (newTask) => async (dispatch) => {
+    try {
+        const data = await todosService.create(newTask)
+        dispatch(create(data))
+    } catch (error) {
+        dispatch(setError(error.message))
+    }
 }
 
 export const getTasks = () => (state) => state.tasks.entities
