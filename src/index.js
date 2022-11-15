@@ -1,7 +1,15 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import configureStore from "./store/store";
-import {completedTask, getTaskLoadingStatus, getTasks, loadTasks, taskDeleted, titleChanged} from "./store/task";
+import {
+    completedTask,
+    getTaskLoadingStatus,
+    getTasks,
+    loadTasks,
+    taskCreated,
+    taskDeleted,
+    titleChanged
+} from "./store/task";
 import {Provider, useDispatch, useSelector} from "react-redux";
 import {getErrors} from "./store/errors";
 
@@ -28,6 +36,14 @@ const App = () => {
         dispatch(taskDeleted(taskId))
     }
 
+    const createTask = () => {
+        const newTask = {
+            title: "New Task",
+            completed: false
+        }
+        dispatch(taskCreated(newTask))
+    }
+
     if (isLoading) {
         return  <h1>Loading...</h1>
     }
@@ -48,7 +64,7 @@ const App = () => {
                     <button onClick={() => dispatch(completedTask(el.id))}>Complete</button>
                     <button onClick={() => changeTitle(el.id)}>Change Title</button>
                     <button onClick={() => deleteTask(el.id)}>Delete</button>
-
+                    <button onClick={() => createTask()}>Create</button>
                     <hr/>
                 </li>
             ))}
